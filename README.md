@@ -1,6 +1,6 @@
 # 📚 AuleVuoteBocconi
 
-*AuleVuoteBocconi* is a tool that helps you find empty classrooms at Bocconi University **excluding official study rooms**. It analyzes the lecture schedule from the official Bocconi website and shows available rooms in real time.
+*AuleVuoteBocconi* is a tool that helps you find empty classrooms at Bocconi University that are not marked as **official study rooms** in the website https://didattica.unibocconi.it/aule/lista_orario.php. It analyzes the lecture schedule from the official Bocconi website and shows available rooms in real time.
 
 ---
 
