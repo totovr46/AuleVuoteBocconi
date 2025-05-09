@@ -54,7 +54,7 @@ crontab -e
 
 ## 🌐 Viewing the Schedule
 
-Once the `cache_orario.json` file is updated, simply open `index.html` in your browser.
+Once the `cache_orario.json` file is updated, simply open `index.html` with a Web Server, like the one in VS Code or Apache2 or Nginx.
 
 You’ll see a list of all currently free classrooms in the university where you can study peacefully—without needing to go to a crowded study room.
 
