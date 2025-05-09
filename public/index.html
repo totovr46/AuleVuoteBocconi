@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aule Vuote Bocconi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,600;1,600&display=swap');
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1{
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 600; /* Semibold */
+            color: #003366;
+            font-size: 3rem;
+        }
+        h1, h2 {
+            color: #003366;
+        }
+        .aula {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .slot-libero {
+            background-color: #d4edda;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .info {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #errorMsg {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="time"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100px;
+        }
+        #results {
+            display: none;
+        }
+        #refreshBtn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        #refreshBtn:hover {
+            background-color: #2980b9;
+        }
+        .search-filter-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .search-field, .filter-field {
+            flex-grow: 1;
+            width: 48%;
+        }
+
+        .search-field input, .filter-field input, .filter-field select {
+            width: 80%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .language-selector {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        }
+        .language-btn {
+            background: none;
+            border: 1px solid #003366;
+            color: #003366;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .language-btn:hover {
+            background-color: #003366;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button class="language-btn" onclick="toggleLanguage()">🇬🇧 English</button>
+    </div>
+    <h1>
+    Aule Vuote Bocconi</h1>
+    <p>Questo strumento analizza le aule vuote nell'Università Bocconi che non sono classificate come "aule studio" sul sito ufficiale (<a href="https://didattica.unibocconi.it/aule/lista_orario.php" target="_blank">didattica.unibocconi.it</a>). Si prega di notare che:</p>
+    <ul>
+        <li>La disponibilità indicata non garantisce l'effettiva accessibilità delle aule</li>
+        <li>Questo servizio è puramente informativo e non intende sostituire le risorse ufficiali</li>
+        <li>L'Università Bocconi non è responsabile per le informazioni qui riportate</li>
+    </ul>    
+    <div class="input-group search-filter-row">
+        <div class="search-field">
+            <label for="startTime">Cerca dalle:</label>
+            <input type="time" id="startTime" value="08:30">
+        </div>
+        
+        <div class="filter-field">
+            <label for="endTime">Alle:</label>
+            <input type="time" id="endTime" value="19:45">
+        </div>
+    </div>
+
+    <div class="input-group search-filter-row">
+        <div class="search-field">
+            <label for="searchAula">Cerca Aula:</label>
+            <input type="text" id="searchAula" placeholder="Inserisci il nome dell'aula...">
+        </div>
+        
+        <div class="filter-field">
+            <label for="filterEdificio">Filtra per edificio:</label>
+            <select id="filterEdificio">
+                <option value="">Tutti gli edifici</option>
+                <option value="sarfatti 25">Leoni (Sarfatti 25)</option>
+                <option value="sraffa 13">Velodromo (Sraffa 13)</option>
+            </select>
+        </div>
+    </div>
+    
+    <button id="refreshBtn">Aggiorna Dati</button>
+    <p id="errorMsg"></p>
+    
+    <div class="loading">
+        <div class="spinner"></div>
+        <p>Analisi in corso...</p>
+    </div>
+    
+    <div id="results">
+        <h2>Risultati dell'Analisi</h2>
+        <p id="dataInfo" class="info"></p>
+        
+        <div id="auleContainer"></div>
+        
+       
+    </div>
+    <script src="translation.js"> </script>
+    <script src="script.obfuscated.js"></script>
+</body>
+</html>
